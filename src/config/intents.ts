@@ -20,6 +20,7 @@
 import type { ComponentType } from 'react';
 
 // <custom:intent-imports>
+import { IconMailForward, IconFileText, IconCalendarPlus } from '@tabler/icons-react';
 // </custom:intent-imports>
 
 export interface IntentLink {
@@ -42,6 +43,9 @@ export interface IntentLink {
 
 export const INTENTS: IntentLink[] = [
   // <custom:intents>
+  { path: '/intents/sitzung-einladen', label: { de: 'Sitzung einladen', en: 'Invite to meeting' }, icon: IconMailForward, description: 'Einladungen für eine Sitzung versenden und Einlade-Link erzeugen' },
+  { path: '/intents/protokoll-erfassen', label: { de: 'Protokoll erfassen', en: 'Record minutes' }, icon: IconFileText, description: 'Protokoll zu einer durchgeführten Sitzung anlegen und freigeben' },
+  { path: '/intents/sitzung-vorbereiten', label: { de: 'Sitzung vorbereiten', en: 'Prepare meeting' }, icon: IconCalendarPlus, description: 'Neue Sitzung anlegen, Tagesordnung als Themen erfassen und Mitglieder zuweisen' },
   // </custom:intents>
 ];
 
@@ -52,4 +56,4 @@ export const INTENTS: IntentLink[] = [
  * purpose — a scaffold update resets it to false (self-healing if Phase 2
  * never ran).
  */
-export const INTENTS_PENDING = true;
+export const INTENTS_PENDING = false;

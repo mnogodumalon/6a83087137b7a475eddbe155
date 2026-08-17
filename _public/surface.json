@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "pages": [
+    {
+      "slug": "sitzungsanmeldung",
+      "component": "Sitzungsanmeldung",
+      "title": "Zur Sitzung anmelden",
+      "endpoints": [
+        {
+          "entity": "sitzungen",
+          "op": "list",
+          "fields": [
+            "titel",
+            "datum",
+            "ort"
+          ],
+          "scope": "r.v_sitzungsstatus != 'abgesagt'",
+          "scope_description": "zeigt nur Sitzungen, die nicht abgesagt wurden",
+          "max_records": 200
+        },
+        {
+          "entity": "anmeldungen",
+          "op": "create",
+          "fields": [
+            "sitzung",
+            "vorname",
+            "nachname",
+            "email",
+            "organisation",
+            "teilnahme",
+            "anmerkungen"
+          ]
+        }
+      ]
+    }
+  ]
+}

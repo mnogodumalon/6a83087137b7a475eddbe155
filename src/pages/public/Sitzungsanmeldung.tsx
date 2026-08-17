@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
-import { de } from 'date-fns/locale';
 import { IconCalendar, IconMapPin, IconCheck, IconX, IconQuestionMark } from '@tabler/icons-react';
 import { PublicShell } from '@/components/PublicShell';
 import {
@@ -14,7 +13,7 @@ import {
   type PublicPagesConfig,
   type PublicPageConfig,
 } from '@/lib/publicClient';
-import { tx } from '@/i18n';
+import { tx, dateFnsLocale } from '@/i18n';
 
 const SITZUNGEN_APP_ID = '6a8308470e2a00ba472be888';
 const ANMELDUNGEN_APP_ID = '6a830848df6bc1d8327d7346';
@@ -38,7 +37,17 @@ type FormState = {
   anmerkungen: string;
 };
 
-const TEILNAHME_OPTIONS: { key: 'zugesagt' | 'abgesagt' | 'vielleicht'; label: string; icon: React.ReactNode; color: string }[] = [
+function formatSitzungDatum(datum: string | undefined): string {
+  if (!datum) return '';
+  try {
+    return format(parseISO(datum), "EEEE, d. MMMM yyyy 'um' HH:mm 'Uhr'", { locale: dateFnsLocale() });
+  } catch {
+    return datum;
+  }
+}
+
+export default function Sitzungsanmeldung() {
+  const TEILNAHME_OPTIONS: { key: 'zugesagt' | 'abgesagt' | 'vielleicht'; label: string; icon: React.ReactNode; color: string }[] = [
   {
     key: 'zugesagt',
     label: tx('Ja, ich nehme teil'),
@@ -59,16 +68,6 @@ const TEILNAHME_OPTIONS: { key: 'zugesagt' | 'abgesagt' | 'vielleicht'; label: s
   },
 ];
 
-function formatSitzungDatum(datum: string | undefined): string {
-  if (!datum) return '';
-  try {
-    return format(parseISO(datum), "EEEE, d. MMMM yyyy 'um' HH:mm 'Uhr'", { locale: de });
-  } catch {
-    return datum;
-  }
-}
-
-export default function Sitzungsanmeldung() {
   const [searchParams] = useSearchParams();
   const sitzungId = searchParams.get('sitzungId') ?? '';
 
@@ -86,7 +85,7 @@ export default function Sitzungsanmeldung() {
     nachname: '',
     email: '',
     organisation: '',
-    teilnahme: '',
+    teilnahme: 'zugesagt',
     anmerkungen: '',
   });
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
@@ -115,7 +114,10 @@ export default function Sitzungsanmeldung() {
     setSitzungLoading(true);
     listPublicRecords(cfg, page, { appId: SITZUNGEN_APP_ID })
       .then(records => {
-        const found = records.find(r => r.record_id === sitzungId) as Sitzung | undefined;
+        const entry = sitzungId ? records[sitzungId] : undefined;
+        const found: Sitzung | undefined = entry
+          ? { record_id: entry.id, fields: entry.fields as Sitzung['fields'] }
+          : undefined;
         if (found) {
           setSitzung(found);
         } else {
@@ -129,7 +131,7 @@ export default function Sitzungsanmeldung() {
   const prepareOnce = () => {
     if (challengePrepared || !cfg || !page) return;
     setChallengePrep(true);
-    prepareChallenge(cfg, page, 'POST', `/apps/${ANMELDUNGEN_APP_ID}/records`).catch(() => {});
+    prepareChallenge(cfg, page, 'POST', `/apps/${ANMELDUNGEN_APP_ID}/records`);
   };
 
   const validate = (): boolean => {
