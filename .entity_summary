@@ -1,0 +1,50 @@
+Legend: `!` after a field name = required (from the app's base view) —
+a step form that writes such a field must not submit it empty.
+A lookup field lists its keys after the type (`[lookup/select: a|b|c]`);
+these are the ONLY valid write values — quote them into the brief verbatim,
+the matching labels come from LOOKUP_OPTIONS at runtime.
+`⚙` lists the service methods for that entity, spelled exactly.
+`✚` lists the entity's Enriched* fields and its enrich() signature,
+spelled exactly — quote both verbatim; an invented enriched field or
+a missing map is a guaranteed type error.
+
+Modules — copy these paths verbatim into a subagent brief:
+  @/types/app                            entity types, APP_IDS, LOOKUP_OPTIONS
+  @/types/enriched                       EnrichedSitzungen, EnrichedAnmeldungen, EnrichedProtokolle, EnrichedThemenFeedback, EnrichedNotizen — the COMPLETE list, no other Enriched* type exists
+  @/lib/enrich                           the enrich functions — exact fields and signatures on the `✚` line of each entity below; every listed map is REQUIRED, and no other enriched field exists
+  @/services/livingAppsService           LivingAppsService, createRecordUrl, extractRecordId
+  @/hooks/useDashboardData               useDashboardData
+  @/lib/formatters                       lookupKey, formatDate
+  @/components/blocks/IntentWizardShell  IntentWizardShell
+  @/components/blocks/EntitySelectStep   EntitySelectStep
+  @/components/blocks/StatusBadge        StatusBadge, getStatusColor
+  @/components/blocks/BudgetTracker      BudgetTracker
+There is NO `@/config/appIds`, no `@/config/lookupOptions` and no
+`@/lib/urlUtils` — APP_IDS and LOOKUP_OPTIONS come from `@/types/app`,
+createRecordUrl from the service. Note the lowercase `l` in the service path.
+
+- Mitglieder (mitglieder): vorname![string/text], nachname![string/text], email![string/email], telefon[string/tel], funktion[string/text], abteilung[string/text], status![lookup/radio: inaktiv|aktiv]
+  ⚙ getMitglieder() · getMitgliederEntry(id) · createMitgliederEntry(fields) · updateMitgliederEntry(id, fields) · deleteMitgliederEntry(id)
+- Sitzungen (sitzungen): titel![string/text], datum![date/datetimeminute], ort[string/text], beschreibung[string/textarea], tagesordnung[string/textarea], mitglieder[multipleapplookup/select], einlade_link[string/url], einladung_versendet[bool], sitzungsstatus![lookup/select: geplant|eingeladen|durchgefuehrt|abgesagt]
+  ⚙ getSitzungen() · getSitzungenEntry(id) · createSitzungenEntry(fields) · updateSitzungenEntry(id, fields) · deleteSitzungenEntry(id)
+  ✚ EnrichedSitzungen adds ONLY mitgliederName — via enrichSitzungen(sitzungen, { mitgliederMap }), all maps required
+  → mitglieder links to app_id 6a830842d546c8fd548dbdb8
+- Anmeldungen (anmeldungen): sitzung![applookup/select], vorname![string/text], nachname![string/text], email![string/email], organisation[string/text], teilnahme![lookup/radio: zugesagt|abgesagt|vielleicht], anmerkungen[string/textarea]
+  ⚙ getAnmeldungen() · getAnmeldungenEntry(id) · createAnmeldungenEntry(fields) · updateAnmeldungenEntry(id, fields) · deleteAnmeldungenEntry(id)
+  ✚ EnrichedAnmeldungen adds ONLY sitzungName — via enrichAnmeldungen(anmeldungen, { sitzungenMap }), all maps required
+  → sitzung links to app_id 6a8308470e2a00ba472be888
+- Protokolle (protokolle): protokollstatus![lookup/radio: entwurf|freigegeben], titel![string/text], sitzung![applookup/select], erstellungsdatum![date/date], protokollfuehrer_vorname![string/text], protokollfuehrer_nachname![string/text], inhalt![string/textarea], beschluesse[string/textarea], anhang[file]
+  ⚙ getProtokolle() · getProtokolleEntry(id) · createProtokolleEntry(fields) · updateProtokolleEntry(id, fields) · deleteProtokolleEntry(id)
+  ✚ EnrichedProtokolle adds ONLY sitzungName — via enrichProtokolle(protokolle, { sitzungenMap }), all maps required
+  → sitzung links to app_id 6a8308470e2a00ba472be888
+- Themen & Feedback (themen_feedback): thementitel![string/text], sitzung![applookup/select], beschreibung[string/textarea], verantwortlicher[applookup/select], themenstatus[lookup/select: offen|in_bearbeitung|abgeschlossen|vertagt], feedback_text[string/textarea], bewertung[lookup/radio: positiv|neutral|negativ]
+  ⚙ getThemenFeedback() · getThemenFeedbackEntry(id) · createThemenFeedbackEntry(fields) · updateThemenFeedbackEntry(id, fields) · deleteThemenFeedbackEntry(id)
+  ✚ EnrichedThemenFeedback adds ONLY sitzungName, verantwortlicherName — via enrichThemenFeedback(themenFeedback, { sitzungenMap, mitgliederMap }), all maps required
+  → sitzung links to app_id 6a8308470e2a00ba472be888
+  → verantwortlicher links to app_id 6a830842d546c8fd548dbdb8
+- Notizen (notizen): notiz_titel![string/text], notiz_text![string/textarea], ersteller_vorname[string/text], ersteller_nachname[string/text], notiz_datum[date/date], notiz_typ[lookup/select: sitzung|protokoll|mitglied|allgemein], sitzung[applookup/select], protokoll[applookup/select], mitglied[applookup/select]
+  ⚙ getNotizen() · getNotizenEntry(id) · createNotizenEntry(fields) · updateNotizenEntry(id, fields) · deleteNotizenEntry(id)
+  ✚ EnrichedNotizen adds ONLY sitzungName, protokollName, mitgliedName — via enrichNotizen(notizen, { sitzungenMap, protokolleMap, mitgliederMap }), all maps required
+  → sitzung links to app_id 6a8308470e2a00ba472be888
+  → protokoll links to app_id 6a830848410a45fc7acca208
+  → mitglied links to app_id 6a830842d546c8fd548dbdb8

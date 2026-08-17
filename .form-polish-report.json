@@ -1,0 +1,40 @@
+{
+  "entities": {
+    "Mitglieder": {
+      "placeholders_set": 7,
+      "defaults_keys": ["status"],
+      "computed_keys": [],
+      "reason": "Reine Stammdaten-Entity für Gremiumsmitglieder. Keine numerischen Felder, keine Preise, keine Dauer-Paare, keine berechenbaren Größen. Status-Lookup für aktiv/inaktiv-Verwaltung vorbelegt."
+    },
+    "Sitzungen": {
+      "placeholders_set": 9,
+      "defaults_keys": ["datum", "sitzungsstatus"],
+      "computed_keys": [],
+      "reason": "Verwaltungs-Entity für Sitzungstermine. Nur ein Datumfeld (Start), kein End-Datum für Dauer. Keine Mengen, keine Preis-Felder. Status-Lookup (geplant → eingeladen → durchgeführt) vorbelegt auf Anfangszustand."
+    },
+    "Anmeldungen": {
+      "placeholders_set": 7,
+      "defaults_keys": ["teilnahme"],
+      "computed_keys": [],
+      "reason": "Registrierungsdaten für Sitzungsteilnehmer. Keine Mengen, keine Zeitdauern, keine Preis-Daten. Teilnahme-Lookup optimistisch auf 'Zugesagt' vorbelegt."
+    },
+    "Protokolle": {
+      "placeholders_set": 8,
+      "defaults_keys": ["erstellungsdatum", "protokollstatus"],
+      "computed_keys": [],
+      "reason": "Dokumentations-Entity für Sitzungsprotokolle. Ein Erfassungsdatum, kein Datumspaar. Keine Mengen oder Preis-Felder. Status-Lookup auf 'Entwurf' vorbelegt, Datum auf heute."
+    },
+    "Themen & Feedback": {
+      "placeholders_set": 7,
+      "defaults_keys": ["themenstatus"],
+      "computed_keys": [],
+      "reason": "Themen-Tracking mit Feedback-Sammlerin. Keine Datums-Paare, keine Mengen, keine Preis-Felder. Status-Lookup auf 'Offen' vorbelegt."
+    },
+    "Notizen": {
+      "placeholders_set": 9,
+      "defaults_keys": ["notiz_datum"],
+      "computed_keys": [],
+      "reason": "Notizen-Sammlerin mit optionalen Zuordnungen zu Sitzungen/Protokollen/Mitgliedern. Ein Erfassungsdatum, keine berechenbaren Größen. Datum auf heute vorbelegt."
+    }
+  }
+}

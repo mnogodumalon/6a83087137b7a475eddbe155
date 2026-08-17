@@ -1,0 +1,61 @@
+{
+  "MitgliederDialog.tsx": {
+    "vorname": "z. B. Max",
+    "nachname": "z. B. Mustermann",
+    "email": "z. B. max@example.com",
+    "telefon": "z. B. +49 30 123456",
+    "funktion": "z. B. Vorsitzender, Kassenwart",
+    "abteilung": "z. B. Finanzen, HR",
+    "status": "Mitglied aktiv oder inaktiv?"
+  },
+  "SitzungenDialog.tsx": {
+    "titel": "z. B. Quartalstreffen Q3",
+    "datum": "Wann findet die Sitzung statt?",
+    "ort": "z. B. Konferenzraum A, Berlin",
+    "beschreibung": "Kurze Zusammenfassung, Hintergrund...",
+    "tagesordnung": "TOP 1: ..., TOP 2: ...",
+    "mitglieder": "Mitglieder wählen",
+    "einlade_link": "z. B. https://example.com/einladung",
+    "einladung_versendet": "E-Mails versendet?",
+    "sitzungsstatus": "Aktuelle Phase der Sitzung"
+  },
+  "AnmeldungenDialog.tsx": {
+    "sitzung": "Zu welcher Sitzung anmelden?",
+    "vorname": "z. B. Anna",
+    "nachname": "z. B. Müller",
+    "email": "z. B. anna@example.com",
+    "organisation": "z. B. TechCorp GmbH",
+    "teilnahme": "Zusage, Absage oder Vielleicht?",
+    "anmerkungen": "Besondere Wünsche, Diäten, Anfahrtskosten..."
+  },
+  "ProtokolleDialog.tsx": {
+    "protokollstatus": "Entwurf oder freigegeben?",
+    "titel": "z. B. Protokoll Q3-Quartal",
+    "sitzung": "Zu welcher Sitzung gehört das Protokoll?",
+    "erstellungsdatum": "Wann wurde das Protokoll erstellt?",
+    "protokollfuehrer_vorname": "z. B. Klaus",
+    "protokollfuehrer_nachname": "z. B. Schmidt",
+    "inhalt": "Auszüge aus der Sitzung, Diskussionspunkte, Ergebnisse...",
+    "beschluesse": "Gefasste Beschlüsse, Abstimmungsergebnisse..."
+  },
+  "ThemenFeedbackDialog.tsx": {
+    "thementitel": "z. B. Budgetplanung 2025",
+    "sitzung": "In welcher Sitzung wurde das Thema behandelt?",
+    "beschreibung": "Kontext, Hintergrund, offene Fragen...",
+    "verantwortlicher": "Welches Mitglied verantwortet dieses Thema?",
+    "themenstatus": "Offen, in Bearbeitung oder abgeschlossen?",
+    "feedback_text": "Rückmeldungen, Kommentare, Verbesserungsvorschläge...",
+    "bewertung": "Wurde das Thema positiv, neutral oder negativ bewertet?"
+  },
+  "NotizenDialog.tsx": {
+    "notiz_titel": "z. B. Follow-up Verträge",
+    "notiz_text": "Was ist wichtig zu merken?",
+    "ersteller_vorname": "z. B. Robert",
+    "ersteller_nachname": "z. B. Wagner",
+    "notiz_datum": "Wann wurde die Notiz erstellt?",
+    "notiz_typ": "Zu Sitzung, Protokoll, Mitglied oder allgemein?",
+    "sitzung": "Welche Sitzung betrifft die Notiz?",
+    "protokoll": "Welches Protokoll betrifft die Notiz?",
+    "mitglied": "Welches Mitglied betrifft die Notiz?"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "pages": {
+    "en": {
+      " am {0}": " on {0}",
+      "Alle Protokolle freigegeben.": "All Minutes Approved.",
+      "Alle Themen geklärt — prima!": "All Items Resolved — Great!",
+      "Als durchgeführt markieren": "Mark as Completed",
+      "Bald (7 Tage)": "Soon (7 Days)",
+      "Einladung noch nicht versendet.": "Invitation Not Yet Sent.",
+      "Einladung versenden": "Send Invitation",
+      "Einladungen versenden": "Send Invitations",
+      "Entwurf": "Draft",
+      "Freigeben": "Approve",
+      "Offene Themen": "Open Items",
+      "Offene Themen & Feedback": "Open Items & Feedback",
+      "Ohne Einladung": "Without Invitation",
+      "Ohne Titel": "Untitled",
+      "Protokoll erstellen": "Create Minutes",
+      "Protokollentwürfe": "Draft Minutes",
+      "Protokollentwürfe zur Freigabe": "Draft Minutes Pending Approval",
+      "Thema hinzufügen": "Add Item",
+      "eine Sitzung": "one meeting",
+      "{0} Sitzungen": "{0} Meetings",
+      "{0} {1} aktive Mitglieder, {2} geplante Sitzungen.": "{0} {1} Active Members, {2} Scheduled Meetings.",
+      "{0} {1} — {2} in den nächsten 7 Tagen.": "{0} {1} — {2} in the Next 7 Days.",
+      "{0} — Einladung versendet": "{0} — Invitation Sent",
+      "{0} — als durchgeführt markiert": "{0} — Marked as Completed",
+      "{0} — freigegeben": "{0} — Approved",
+      "{0} — verschoben nach {1}": "{0} — Moved to {1}"
+    }
+  },
+  "v": 1
+}
