@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "flows": [],
+  "unregistered_pages": [
+    {
+      "file": "src/pages/intents/ProtokollErfassenPage.tsx",
+      "summary": "/**\n * Protokoll erfassen — 3-Schritt-Wizard.\n * Steps: 1) Sitzung wählen (nur Status 'durchgefuehrt') →\n *        2) Protokoll schreiben (Mini-Form mit Titel, Datum, Protokollführer, Inhalt, Beschlüsse, Status) →\n *        3) Speichern & Protokolleintrag anlegen.\n * Reads: sitzungen. Writes: protokolle (createProtokolleEntry).\n * Composes: IntentWizardShell, EntitySelectStep.\n */",
+      "components": [
+        "Button",
+        "EntitySelectStep",
+        "Input",
+        "IntentWizardShell",
+        "Label",
+        "Select",
+        "SelectContent",
+        "SelectItem",
+        "SelectTrigger",
+        "SelectValue",
+        "StatusBadge",
+        "Textarea"
+      ],
+      "writes": [
+        "createProtokolleEntry"
+      ]
+    },
+    {
+      "file": "src/pages/intents/SitzungEinladenPage.tsx",
+      "summary": "/**\n * Sitzung Einladen — 3-Schritt-Wizard.\n * Steps: 1) Sitzung wählen (nur 'geplant') → 2) Einlade-Link & Mitglieder erfassen\n *        → 3) Bestätigen & Sitzung als 'eingeladen' speichern.\n * Reads: sitzungen, mitglieder. Writes: sitzungen (updateSitzungenEntry).\n * Composes: IntentWizardShell, EntitySelectStep.\n */",
+      "components": [
+        "Button",
+        "EntitySelectStep",
+        "Input",
+        "IntentWizardShell",
+        "StatusBadge"
+      ],
+      "writes": [
+        "updateSitzungenEntry"
+      ]
+    },
+    {
+      "file": "src/pages/intents/SitzungVorbereitenPage.tsx",
+      "summary": "/**\n * Sitzung vorbereiten — 3-Schritt-Wizard.\n * Steps: 1) Sitzung anlegen → 2) Themen erfassen → 3) Mitglieder zuweisen.\n * Reads: mitglieder. Writes: sitzungen (createSitzungenEntry, updateSitzungenEntry),\n *        themenFeedback (createThemenFeedbackEntry).\n * Composes: IntentWizardShell.\n */",
+      "components": [
+        "Button",
+        "Input",
+        "IntentWizardShell",
+        "Label",
+        "Textarea"
+      ],
+      "writes": [
+        "createSitzungenEntry",
+        "createThemenFeedbackEntry",
+        "updateSitzungenEntry"
+      ]
+    }
+  ]
+}

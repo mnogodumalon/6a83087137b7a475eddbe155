@@ -5,23 +5,19 @@ import { DashboardGrid } from '@/components/DashboardGrid';
 import { HeroBanner } from '@/components/HeroBanner';
 import { WorkList } from '@/components/WorkList';
 import { StatStrip, StatStripItem } from '@/components/StatCard';
-import { KanbanWidget, type KanbanCard, type KanbanColumn } from '@/components/widgets/KanbanWidget';
-import { tx, appLabel } from '@/i18n';
+import { CalendarWidget, type CalendarEvent } from '@/components/widgets/CalendarWidget';
+import { tx, appLabel, dateFnsLocale } from '@/i18n';
 import { useClock, gruss, namen, undoToast } from '@/lib/polish';
-import { lookupOption, LOOKUP_OPTIONS } from '@/types/app';
-import { lookupKey } from '@/lib/formatters';
+import { lookupOption } from '@/types/app';
+import { lookupKey, formatDate } from '@/lib/formatters';
 import { LivingAppsService } from '@/services/livingAppsService';
-import { formatDate } from '@/lib/formatters';
-import { extractRecordId } from '@/services/livingAppsService';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { format, parseISO, isAfter, isBefore, startOfDay, addDays } from 'date-fns';
 import {
   IconCalendarEvent,
   IconUsers,
-  IconFileText,
   IconMessageCircle,
   IconSend,
-  IconAlertTriangle,
   IconClipboardList,
 } from '@tabler/icons-react';
 
@@ -29,11 +25,12 @@ export default function DashboardOverview() {
   const data = useDashboardData();
   const {
     sitzungen, setSitzungen, anmeldungen, protokolle, themenFeedback,
-    mitglieder, mitgliederMap, sitzungenMap,
+    mitglieder, sitzungenMap,
     loading, error, fetchAll,
   } = data;
 
   const clock = useClock();
+  const locale = dateFnsLocale();
 
   const crud = useEntityCrud(data, {
     footer: (top) => {
@@ -61,42 +58,27 @@ export default function DashboardOverview() {
   const enrichedThemenFeedback = crud.enriched.themenFeedback;
   const enrichedProtokolle = crud.enriched.protokolle;
 
-  // ── Kanban columns from schema ────────────────────────────────────────────
-  const kanbanColumns = useMemo<KanbanColumn[]>(
-    () => (LOOKUP_OPTIONS['sitzungen']?.['sitzungsstatus'] ?? []).map(o => ({
-      key: o.key,
-      label: o.label,
-      tone: o.key === 'abgesagt' ? 'destructive' as const
-        : o.key === 'durchgefuehrt' ? 'success' as const
-        : o.key === 'eingeladen' ? 'primary' as const
-        : 'default' as const,
-    })),
-    [],
+  // ── Calendar events ───────────────────────────────────────────────────────
+  const calendarEvents = useMemo<CalendarEvent[]>(() =>
+    enrichedSitzungen
+      .filter(s => !!s.fields.datum)
+      .map(s => {
+        const status = lookupKey(s.fields.sitzungsstatus);
+        return {
+          id: `sitzung:${s.record_id}`,
+          start: s.fields.datum!,
+          title: s.fields.titel ?? tx('Ohne Titel'),
+          subtitle: s.fields.ort ?? undefined,
+          tone: status === 'abgesagt' ? 'destructive' as const
+            : status === 'durchgefuehrt' ? 'success' as const
+            : status === 'eingeladen' ? 'primary' as const
+            : 'default' as const,
+        };
+      }),
+    [enrichedSitzungen],
   );
 
-  const kanbanCards = useMemo<KanbanCard[]>(() => {
-    const today = startOfDay(clock);
-    return enrichedSitzungen.map(s => {
-      const status = lookupKey(s.fields.sitzungsstatus) ?? kanbanColumns[0]?.key ?? '';
-      const datum = s.fields.datum ? parseISO(s.fields.datum) : null;
-      const isOverdue = datum && isBefore(datum, today) && status === 'geplant';
-      return {
-        id: `sitzung:${s.record_id}`,
-        column: status,
-        title: s.fields.titel ?? tx('Ohne Titel'),
-        subtitle: s.fields.datum ? formatDate(s.fields.datum) + (s.fields.ort ? ` · ${s.fields.ort}` : '') : undefined,
-        tone: isOverdue ? 'warning' as const
-          : status === 'durchgefuehrt' ? 'success' as const
-          : status === 'eingeladen' ? 'primary' as const
-          : status === 'abgesagt' ? 'destructive' as const
-          : 'default' as const,
-      };
-    });
-  }, [enrichedSitzungen, kanbanColumns, clock]);
-
   // ── KPIs ─────────────────────────────────────────────────────────────────
-  const [filterStatus, setFilterStatus] = useState<string | null>(null);
-
   const today = startOfDay(clock);
   const naechste7Tage = addDays(today, 7);
 
@@ -179,24 +161,25 @@ export default function DashboardOverview() {
     }
   }
 
-  // ── Kanban move ────────────────────────────────────────────────────────────
-  const moveCard = async (cardId: string, newColumn: string) => {
-    const rid = cardId.split(':')[1];
+  // ── Calendar: reschedule on drag ──────────────────────────────────────────
+  const handleEventDrop = async (eventId: string, newStart: string) => {
+    const rid = eventId.split(':')[1];
     if (!rid) return;
     const prev = sitzungen.find(s => s.record_id === rid);
     if (!prev) return;
-    const label = kanbanColumns.find(c => c.key === newColumn)?.label ?? newColumn;
+    const titel = prev.fields.titel ?? '';
+    const newDate = newStart.slice(0, 10);
     setSitzungen(old => old.map(s =>
       s.record_id === rid
-        ? { ...s, fields: { ...s.fields, sitzungsstatus: lookupOption('sitzungen', 'sitzungsstatus', newColumn) } }
+        ? { ...s, fields: { ...s.fields, datum: newDate } }
         : s,
     ));
-    undoToast(tx`${prev.fields.titel ?? ''} — verschoben nach ${label}`, async () => {
+    undoToast(tx`${titel} — verschoben auf ${formatDate(newDate)}`, async () => {
       setSitzungen(old => old.map(s => s.record_id === rid ? prev : s));
-      await LivingAppsService.updateSitzungenEntry(rid, { sitzungsstatus: lookupKey(prev.fields.sitzungsstatus) ?? '' });
+      await LivingAppsService.updateSitzungenEntry(rid, { datum: prev.fields.datum ?? '' });
     });
     try {
-      await LivingAppsService.updateSitzungenEntry(rid, { sitzungsstatus: newColumn });
+      await LivingAppsService.updateSitzungenEntry(rid, { datum: newDate });
     } catch {
       await fetchAll();
     }
@@ -293,16 +276,12 @@ export default function DashboardOverview() {
               value={bald.length}
               icon={<IconCalendarEvent size={16} className="shrink-0" />}
               tone={bald.length > 0 ? 'primary' : 'default'}
-              onClick={() => setFilterStatus(f => f === '__bald' ? null : '__bald')}
-              active={filterStatus === '__bald'}
             />
             <StatStripItem
               title={tx('Ohne Einladung')}
               value={nichtEingeladen.length}
               icon={<IconSend size={16} className="shrink-0" />}
               tone={nichtEingeladen.length > 0 ? 'warning' : 'default'}
-              onClick={() => setFilterStatus(f => f === '__ohneEinladung' ? null : '__ohneEinladung')}
-              active={filterStatus === '__ohneEinladung'}
             />
             <StatStripItem
               title={appLabel('mitglieder')}
@@ -325,23 +304,17 @@ export default function DashboardOverview() {
           </StatStrip>
         }
         primary={
-          <KanbanWidget
-            cards={
-              filterStatus === '__bald'
-                ? kanbanCards.filter(c => bald.some(s => s.record_id === c.id.split(':')[1]))
-                : filterStatus === '__ohneEinladung'
-                ? kanbanCards.filter(c => nichtEingeladen.some(s => s.record_id === c.id.split(':')[1]))
-                : kanbanCards
-            }
-            columns={kanbanColumns}
-            defaultCollapsed={['abgesagt']}
-            onCardClick={card => {
-              const rid = card.id.split(':')[1];
+          <CalendarWidget
+            events={calendarEvents}
+            locale={locale}
+            defaultView="month"
+            onEventClick={ev => {
+              const rid = ev.id.split(':')[1];
               const rec = sitzungen.find(s => s.record_id === rid);
               if (rec) crud.sitzungen.openDetail(rec);
             }}
-            onCardMove={moveCard}
-            onAddCard={column => crud.sitzungen.openCreate({ sitzungsstatus: column })}
+            onEmptyClick={d => crud.sitzungen.openCreate({ datum: format(d, 'yyyy-MM-dd') })}
+            onEventDrop={handleEventDrop}
           />
         }
         aside={

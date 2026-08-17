@@ -1,4 +1,21 @@
 {
   "version": 1,
-  "pages": []
+  "pages": [
+    {
+      "slug": "sitzungsanmeldung",
+      "type": "custom",
+      "entity": "anmeldungen",
+      "title": "Zur Sitzung anmelden",
+      "published": true,
+      "fields": [
+        "sitzung",
+        "vorname",
+        "nachname",
+        "email",
+        "organisation",
+        "teilnahme",
+        "anmerkungen"
+      ]
+    }
+  ]
 }
